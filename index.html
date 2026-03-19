@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Post Generator | Shayan Hingorja</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600;700&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        /* --- Reset & Base Styles --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fdf2f8;
+            padding: 10px; /* Reduced for mobile padding */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- Responsive Input Card --- */
+        .input-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+            border-top: 6px solid #d4af37;
+            text-align: center;
+        }
+
+        .trending-title {
+            font-family: 'Cinzel', serif;
+            color: #880e4f;
+            font-size: clamp(22px, 5vw, 28px); /* Dynamic font size */
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .sub-title {
+            color: #ad1457;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .developer-credit {
+            font-size: 13px;
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-weight: bold;
+            display: block;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .input-box { margin-bottom: 15px; text-align: left; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: #ad1457; }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #eee; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            outline: none; 
+            -webkit-appearance: none; /* For better mobile appearance */
+        }
+        
+        .gen-btn {
+            width: 100%; padding: 15px; background: #d4af37; color: white; border: none;
+            border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+
+        /* --- Responsive Grid --- */
+        #framesContainer {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            /* Flex layout for mobile, grid for desktop */
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 10px;
+        }
+
+        .card-wrapper { 
+            width: 100%;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 15px; 
+        }
+
+        /* --- Optimized Frame Size for Mobile --- */
+        .frame {
+            width: 100%; /* Flexible width */
+            max-width: 360px; /* Limit for desktop */
+            aspect-ratio: 3/4; /* Keeps rectangle shape */
+            background: white;
+            padding: 30px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .sparkle-star {
+            position: absolute;
+            font-size: 18px;
+            color: #ffd700;
+            animation: starTwinkle 2s infinite;
+            z-index: 1;
+        }
+
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .text-line { font-size: 12px; color: #daa520; margin-bottom: 15px; letter-spacing: 3px; z-index: 2; }
+        .msg-text { 
+            font-size: clamp(14px, 4vw, 17px); /* Responsive font size */
+            line-height: 1.6; 
+            color: #333; 
+            z-index: 2; 
+            flex-grow: 1; 
+            display: flex; 
+            align-items: center; 
+        }
+        .regards { font-family: 'Dancing Script'; font-size: 24px; color: #880e4f; z-index: 2; font-weight: bold; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; width: 100%; }
+
+        /* --- Frame Variants --- */
+        .f1 { border: 12px solid #d4af37; background: #fffdf5; }
+        .f2 { border: 10px solid #f48fb1; border-radius: 30px; background: #fff5f8; border-style: dotted; }
+        .f3 { background: #001f3f; color: white; border: 8px solid #c0c0c0; }
+        .f3 .msg-text { color: #e0e0e0; } .f3 .regards { color: #c0c0c0; }
+        .f4 { border: 12px solid #26a69a; background: #f2fdfb; border-radius: 10px; }
+        .f5 { border: 8px solid transparent; border-image: linear-gradient(45deg, #f093fb, #f5576c) 1; }
+
+        /* --- Action Buttons Responsive --- */
+        .btn-group { display: flex; gap: 8px; width: 100%; max-width: 360px; }
+        .action-btn { flex: 1; padding: 12px 5px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; font-size: 13px; }
+        .dl-btn { background: #333; }
+        .wa-btn { background: #25D366; }
+
+        /* --- Specific Mobile Fixes --- */
+        @media (max-width: 400px) {
+            .frame {
+                height: 420px; /* Slightly shorter on very small screens */
+            }
+            .trending-title { font-size: 20px; }
+            .btn-group { flex-direction: column; } /* Stack buttons if screen too small */
+        }
+    </style>
+</head>
+<body>
+
+<div class="input-card">
+    <h1 class="trending-title">🌙✨ Eid Wish Maker</h1>
+    <span class="sub-title">Generate Eid Greetings in Seconds</span>
+    <span class="developer-credit">Created with ❤️ by Shayan Hingorja</span>
+
+    <div class="input-box">
+        <label>Full Name:</label>
+        <input type="text" id="userName" placeholder="Type your name here...">
+    </div>
+    <div class="input-box">
+        <label>Choose Style/Language:</label>
+        <select id="langChoice">
+            <option value="" disabled selected>Choose Language</option>
+            <option value="english">English</option>
+            <option value="urdu">Roman Urdu</option>
+        </select>
+    </div>
+    <button class="gen-btn" onclick="generateCards()">Create Magic Styles 🌙✨</button>
+</div>
+
+<div id="framesContainer"></div>
+
+<script>
+    function generateCards() {
+        const name = document.getElementById('userName').value;
+        const lang = document.getElementById('langChoice').value;
+        const container = document.getElementById('framesContainer');
+
+        if(!name.trim()) return alert("Please enter your name!");
+        if(!lang) return alert("Please choose a language!");
+
+        const texts = {
+            english: "On this blessed occasion of Eid-ul-Fitr, I pray that you stay happy forever. Celebrate with your family, as Eid is the true essence of happiness. Stay joyful yourself and become a reason for others to smile too. May the light of this Eid brighten every corner of your life and bring you endless peace. Have a wonderful and blessed Eid! 🌙✨💖😊",
+            urdu: "Eid-ul-Fitr ke is mubarak mauqe par meri dua hai ke aap hamesha khush rahain. Apne ghar walon ke sath mil kar Eid ki khushiyan manaen, kyunke Eid naam hi muskurahaton ka hai. Aap khud bhi khush rahain aur dusron ki khushi aur muskurahat ka zarya banain. Allah kare ye Eid aapki zindagi mein nayi umeed aur dheron sukoon lekar aaye. Eid Mubarak! 🌙✨💖😊"
+        };
+
+        const finalMsg = texts[lang];
+        container.innerHTML = '';
+        container.style.display = 'grid';
+
+        const styles = ['f1', 'f2', 'f3', 'f4', 'f5'];
+
+        styles.forEach((styleClass, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'card-wrapper';
+            const cardId = `card-${index}`;
+            
+            wrapper.innerHTML = `
+                <div class="frame ${styleClass}" id="${cardId}">
+                    <span class="sparkle-star" style="top:20px; left:20px;">✦</span>
+                    <span class="sparkle-star" style="bottom:20px; right:20px; animation-delay:1s;">✦</span>
+                    
+                    <div class="text-line">✦ ✦ ✦ ✦ ✦</div>
+                    <div class="msg-text">${finalMsg}</div>
+                    <div class="regards">Regards: ${name}</div>
+                </div>
+                <div class="btn-group">
+                    <button class="action-btn dl-btn" onclick="downloadCard('${cardId}')">Save Image 📥</button>
+                    <button class="action-btn wa-btn" onclick="shareWA('${finalMsg}', '${name}')">WhatsApp 📱</button>
+                </div>
+            `;
+            container.appendChild(wrapper);
+        });
+
+        window.scrollTo({ top: container.offsetTop - 20, behavior: 'smooth' });
+    }
+
+    function downloadCard(id) {
+        const element = document.getElementById(id);
+        const stars = element.querySelectorAll('.sparkle-star');
+        stars.forEach(s => s.style.display = 'none');
+
+        html2canvas(element, { scale: 3 }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `Eid-Card-by-Shayan-${id}.jpg`;
+            link.href = canvas.toDataURL("image/jpeg", 0.95);
+            link.click();
+            stars.forEach(s => s.style.display = 'block');
+        });
+    }
+
+    function shareWA(msg, name) {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg + "\n\nRegards: " + name + "\n\nGenerated by Shayan Hingorja's AI Tool")}`, '_blank');
+    }
+</script>
+
+</body>
+</html>
